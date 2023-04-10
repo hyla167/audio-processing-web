@@ -5,3 +5,5 @@ To zoom the audio you can either
 * Use the slider below the graph, or
 * Choose the start and end time, then click 'Zoom', or
 * Select the desired part by dragging on the waveform, then click 'Zoom'
+
+![alt text](https://github.com/hyla167/audio-processing-web/blob/master/demo.png)
