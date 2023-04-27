@@ -22,7 +22,7 @@ var wavesurfer = WaveSurfer.create({
           }
       })
       ],
-    splitChannels: true
+    splitChannels: true,
 });
 var tooltip; // Display information when hover on parameters graph
 var startTime = null, endTime = null, interval = null; // for zoom
@@ -35,19 +35,29 @@ var formantLine1, formantLine2, formantLine3, formantLine4;
 var xAxis, yAxisLeft, yAxisRight, yAxisRight2;
 var valueline, valueline2; // Pitch and Intensity line
 var svg;
+var pxPerSec;
 var totalPixels = 1264 - 150; // 1264 is default width of <canvas> on dev-device, 150 is total padding (left + right)
 wavesurfer.load('uploads/temp.wav');
 wavesurfer.on('ready',(e)=>{
   soundSeconds = wavesurfer.getDuration(); // get the time of audio
-  var pxPerSec = totalPixels/soundSeconds;
+  pxPerSec = (totalPixels)/soundSeconds;
 	wavesurfer.zoom(pxPerSec);
   document.getElementById("slider").setAttribute("min", pxPerSec + '')
   document.getElementById("slider").setAttribute("value", pxPerSec + '')
+  // Check if the audio is stereo or not, and change the convert button accordingly
+  if (wavesurfer.backend.splitPeaks.length == 1) {
+    document.getElementById('convert').value = "Convert to stereo";
+    document.forms.convertButton.action = '/toStereo';
+  }
+})
+
+wavesurfer.on('finish', (e) => {
+    document.getElementById("play-btn").className = "button";
+    document.getElementById("play-btn").innerHTML = `<i class="fas fa-play"></i>  Play`;
 })
 
 setGraphParams(totalPixels);
 initializeGraph();
-
 let firstTime = true;
 function playAudio() {
     var musicPlayer = document.getElementById("musicPlayer");
@@ -55,16 +65,16 @@ function playAudio() {
     musicPlayer.src = 'uploads/temp.wav'
     firstTime = false;
     }
-    if (document.getElementById("play-btn").className == 'is-playing')
+    if (document.getElementById("play-btn").className == 'is-playing button')
     {
         wavesurfer.playPause();
-        document.getElementById("play-btn").className = "";
-        document.getElementById("play-btn").textContent = "Play";
+        document.getElementById("play-btn").className = "button";
+        document.getElementById("play-btn").innerHTML = `<i class="fas fa-play"></i>  Play`;
     }
     else {
         wavesurfer.playPause();
-        document.getElementById("play-btn").className = "is-playing";
-        document.getElementById("play-btn").textContent = "Pause";
+        document.getElementById("play-btn").className = "is-playing button";
+        document.getElementById("play-btn").innerHTML = `<i class="fas fa-pause"></i>  Pause`;
     }
 }
 
@@ -82,6 +92,10 @@ slider.oninput = function () {
 ////// END ZOOM SLIDER METHOD //////
 
 ////// ZOOM INTERVAL METHOD //////
+document.getElementById("set-zoom-time").addEventListener("submit", function (e) {
+  e.preventDefault();
+  getData(e.target);
+});
 function getData(form) {
   var formData = new FormData(form);
   console.log(formData);
@@ -90,6 +104,23 @@ function getData(form) {
     if (pair[0] == 'zoom-start') startTime = parseFloat(pair[1]);
     else endTime = parseFloat(pair[1]);
   }
+  if (isNaN(endTime) || isNaN(startTime)) {
+    document.getElementById('alert').textContent = "Please drag an audio or type both start and end time first!";
+    return;
+  }
+  if (endTime <= startTime) {
+    document.getElementById('alert').textContent = "End time must be than start time!";
+    return;
+  }
+  if (startTime < 0) {
+    document.getElementById('alert').textContent = "Time must be a non-negative value!";
+    return;
+  }
+  if (endTime > soundSeconds) {
+    document.getElementById('alert').textContent = "Selected time exceeds audio length, max length is " + soundSeconds + " seconds!";
+    return;
+  }
+  document.getElementById('alert').textContent = "";
   interval = (endTime - startTime).toFixed(2);
   var pxPerSec = totalPixels / interval;
   wavesurfer.zoom(pxPerSec);
@@ -98,27 +129,22 @@ function getData(form) {
   var progress = ((startTime + endTime) / 2) / soundSeconds; 
   wavesurfer.seekAndCenter(progress);
 }
-
-document.getElementById("set-zoom-time").addEventListener("submit", function (e) {
-  e.preventDefault();
-  getData(e.target);
-});
 ////// END ZOOM INTERVAL METHOD //////
 
 ///// ZOOM INTERVAL USING WAVESURFER REGION /////
+// At most one region can be selected at a time
+wavesurfer.on('region-updated', function(region){
+  var regions = region.wavesurfer.regions.list;
+  var keys = Object.keys(regions);
+  if(keys.length > 1){
+    regions[keys[0]].remove();
+  }
+});
+
 wavesurfer.on('region-update-end', function (region) {
   region.drag = false;
   document.getElementById('zoom-start').value = region.start.toFixed(2);
   document.getElementById('zoom-end').value = region.end.toFixed(2);
-});
-
-// At most one region can be selected at a time
-wavesurfer.on('region-updated', function(region){
-      var regions = region.wavesurfer.regions.list;
-      var keys = Object.keys(regions);
-      if(keys.length > 1){
-        regions[keys[0]].remove();
-      }
 });
 ///// END ZOOM INTERVAL USING WAVESURFER REGION /////
 
@@ -349,8 +375,8 @@ tooltip = d3.select("#chart").append("div")
 
 mouseG = svg.append("g")
 .attr("class", "mouse-over-effects");
-
-mouseG.append("path") // create vertical line to follow mouse
+// create vertical line to follow mouse
+mouseG.append("path") 
 .attr("class", "mouse-line")
 .style("stroke", "#A9A9A9")
 .style("stroke-width", lineStroke)
@@ -365,11 +391,11 @@ var mousePerLine = mouseG.selectAll('.mouse-per-line')
     .attr("class", "mouse-per-line");
 
 mousePerLine.append("circle")
-    .attr("r", 4)
-    .style("stroke", "red")
-    .style("fill", "none")
-    .style("stroke-width", lineStroke)
-    .style("opacity", "0");
+  .attr("r", 4)
+  .style("stroke", "red")
+  .style("fill", "none")
+  .style("stroke-width", lineStroke)
+  .style("opacity", "0");
 
 mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas
     .attr('width', 5000) // Based on setGraphParams() 
@@ -399,13 +425,13 @@ mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas
       var mouse = d3.mouse(this)
       d3.selectAll(".mouse-per-line")
         .attr("transform", function (d, i) {
-          var beginning = 0,
-            end = lines[i].getTotalLength(),
-            target = null;
+        var beginning = 0, end = lines[i].getTotalLength(),
+        target = null;
         while (true){
           target = Math.floor((beginning + end) / 2);
           pos = lines[i].getPointAtLength(target);
-          if ((target === end || target === beginning) && pos.x !== mouse[0]) {
+          if ((target === end || target === beginning)
+               && pos.x !== mouse[0]) {
               break;
           }
           if (pos.x > mouse[0])      end = target;
@@ -414,13 +440,14 @@ mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas
         }
         d3.select(".mouse-line")
             .attr("d", function () {
+              // create a line from (mouseX, 0)
+              // to (mouseX, graph_height)
               var d = "M" + mouse[0] + "," + 185;
               d += " " + mouse[0] + "," + 0;
               return d;
             });
         return "translate(" + mouse[0] + "," + pos.y +")";
         });
-
       updateTooltipContent(mouse, data)
     }) 
     }); 
@@ -531,7 +558,7 @@ wavesurfer.on('scroll', function (scrollEvent) {
       if (pos3.x > mouse[0])      end3 = target3;
       else if (pos3.x < mouse[0]) beginning3 = target3;
       else break; //position found
-    }
+    } 
     while (true){
       target4 = Math.floor((beginning4 + end4) / 2);
       pos4 = fm2[0].getPointAtLength(target4);
@@ -564,27 +591,28 @@ wavesurfer.on('scroll', function (scrollEvent) {
     }
     var milisecond = x.invert(mouse[0]).getMilliseconds();
     if (('' + milisecond).length < 3) {milisecond = '0' + milisecond;}
-
+    var height = document.getElementById('waveform').clientHeight;
     tooltip.html("Time: " + x.invert(mouse[0]).getSeconds() + "." + milisecond
     + "s<br><span style='font-size: 10px; color: blue'>Pitch: " 
     + y0.invert(pos2.y).toFixed(2) 
     + "Hz</span><br><span style='font-size: 10px; color: #009216'>Intensity: "
     + y1.invert(pos1.y).toFixed(2) + "dB</span>"
     + "<br><span style='font-size: 10px; color: red'>Formant 1: " 
-    + y2.invert(fm1[0].getPointAtLength(mouse[0]).y).toFixed(2)
-    + "Hz<br>Formant 2: " + y2.invert(fm2[0].getPointAtLength(mouse[0]).y).toFixed(2)
-    + "Hz<br>Formant 3: " + y2.invert(fm3[0].getPointAtLength(mouse[0]).y).toFixed(2)
-    + "Hz<br>Formant 4: " + y2.invert(fm4[0].getPointAtLength(mouse[0]).y).toFixed(2) + "Hz</span>"
+    + y2.invert(pos3.y).toFixed(2)
+    + "Hz<br>Formant 2: " + y2.invert(pos4.y).toFixed(2)
+    + "Hz<br>Formant 3: " + y2.invert(pos5.y).toFixed(2)
+    + "Hz<br>Formant 4: " + y2.invert(pos6.y).toFixed(2) 
+    + "Hz</span>"
     ) 
     .style('display', 'block')
     .style('z-index', '2')
     .style('left', d3.event.pageX - 82 + 20 + 'px')
-    .style('top', d3.event.pageY - document.getElementById('waveform').clientHeight - 320 + 'px')
+    .style('top', d3.event.pageY - height - 400 + 'px')
     .style('font-size', '11.5px')
   }
 
 function reset() {
-  var defaultPxPerSec = 100;
+  var defaultPxPerSec = 111;
   document.getElementById('zoom-start').value = "";
   document.getElementById('zoom-end').value = "";
   document.getElementById('slider').value = defaultPxPerSec;

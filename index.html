@@ -20,25 +20,7 @@
     <form enctype="multipart/form-data" id="form" method="post" action="/view">
     <p id="upload">Upload your audio file:</p>
     <input type="file" id="musicFile" name="musicFile" accept=".wav">
-    <input type="submit" value="Submit">
+    <input type="submit" value="Submit" class="button" onclick="this.disabled=true;this.form.submit();">
     </form>
-    <!-- <script>
-        const form = document.getElementById("form");
-
-        form.addEventListener("submit", submitForm);
-
-        function submitForm(e) {
-            e.preventDefault();
-            const files = document.getElementById("musicFile");
-            const formData = new FormData();
-            console.log(files.files)
-            formData.append("musicFile", files.files[0]);
-            fetch("upload.php", {
-                method: 'POST',
-                body: formData,
-            })
-                .catch((err) => ("Error occured", err));
-        }
-    </script> -->
     </body>
 </html>

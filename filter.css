@@ -9,20 +9,6 @@ header {
     text-align: center;
 }
 
-input::file-selector-button {
-  background-color: green;
-    border-radius: 5%;
-    padding: 8px;
-    color: white;
-    border: 2px solid green;
-    margin-bottom: 10px;
-}
-
-input::file-selector-button:hover {
-  background-color: rgb(35, 168, 35);
-  border-color: rgb(35, 168, 35);
-}
-
 .button {
   background-color: green;
     border-radius: 5%;
@@ -143,7 +129,7 @@ a:link {
 }
 
 #play-btn {
-    margin-right: 50px;
+    margin-right: 30px;
 }
 
 #slider_div {
@@ -151,44 +137,39 @@ a:link {
     text-align: center;
 }
 #reset {
-  margin-right: 50px;
+  margin-left: 30px;
   display: inline;
 }
 #back-home {
+  margin-left: 30px;
   display: inline;
 }
 #waveform{
-	margin-left: 75px;
-	margin-right: 75px;
-}
-
-#alert {
-  color: red;
-  margin-left: 20px;
-  display: inline;
+	padding-left: 75px;
+	padding-right: 75px;
 }
 
 #mono {
   display: inline;
-  margin-right: 50px;
+  margin-right: 30px;
 }
 #stereo {
   display: inline;
-  margin-right: 50px;
+  margin-right: 30px;
 }
 #reduce-noise {
   display: inline;
-  margin-right: 50px;
+  margin-right: 30px;
 }
-/* #set-zoom-time {
+#set-zoom-time {
+  margin-left: 20px;
   display: inline;
-} */
+}
 #zoom-start, #zoom-end {
   width: 60px;
-  margin-right: 50px;
+  margin-right: 30px;
 }
 #download {
-  margin-right: 50px;
   display: inline;
 }
 

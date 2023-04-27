@@ -23,12 +23,12 @@ app.use(express.static(__dirname));
 app.get('/', async function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
+
 app.post("/toHomepage", async function (req, res) {
   var directory = `${__dirname}/uploads`
   // Delete all temporary files after back to homepage
   fs.readdir(directory, (err, files) => {
     if (err) throw err;
-  
     for (const file of files) {
       fs.unlink(path.join(directory, file), (err) => {
         if (err) throw err;
@@ -44,6 +44,10 @@ app.get('/viewdata', function (req, res) {
 
 app.get('/mono', function (req, res) {
   res.sendFile(__dirname + '/mono.html')
+})
+
+app.get('/stereo', function (req, res) {
+  res.sendFile(__dirname + '/stereo.html')
 })
 
 app.get('/filter', function (req, res) {
@@ -165,6 +169,28 @@ app.post("/toMono", async function (req, res) {
       console.log('stderr ', stderr);})
   await new Promise(resolve => setTimeout(resolve, 8000));
   res.redirect('/mono');
+});
+
+app.post("/toStereo", async function (req, res) {
+  exec(`Praat.exe --run script\\convertToStereo.praat ..\\uploads\\ temp`,
+    (e, stdout, stderr)=> {
+      if (e instanceof Error) {
+          console.error(e);
+          throw e;
+      }
+      console.log('stdout ', stdout);
+      console.log('stderr ', stderr);})
+  await new Promise(resolve => setTimeout(resolve, 8000));
+  exec(`Praat.exe --run script\\extractData.praat ..\\uploads\\ temp`,
+    (e, stdout, stderr)=> {
+      if (e instanceof Error) {
+          console.error(e);
+          throw e;
+      }
+      console.log('stdout ', stdout);
+      console.log('stderr ', stderr);})
+  await new Promise(resolve => setTimeout(resolve, 8000));
+  res.redirect('/stereo');
 });
 
 app.post("/toFilter", async function (req, res) {
