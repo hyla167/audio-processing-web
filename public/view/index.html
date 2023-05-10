@@ -1,0 +1,54 @@
+<<<<<<< HEAD:public/view/index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/styles.css"/>
+    <title>Praat Web</title>
+</head>
+<body>
+    <header class="header_general">
+        Audio Processing Web
+    </header>
+    <p>This website uses Praat (<a href="https://www.fon.hum.uva.nl/praat/">https://www.fon.hum.uva.nl/praat/</a>) for visualizing 
+        audio waveform and analysing its pitch, intensity, and formants. You can also procoss the audio by converting it from stereo to mono or reducing its noise, then download the processed audio.
+        </p>
+    <form enctype="multipart/form-data" id="form" method="post" action="/view">
+    <p id="upload">Upload your audio file:</p>
+    <input type="file" id="musicFile" name="musicFile" accept=".wav">
+    <input type="submit" value="Submit" class="button" onclick="this.disabled=true;this.form.submit();">
+    </form>
+    </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css"/>
+    <title>Praat Web</title>
+</head>
+<body>
+    <header class="header_general">
+        Audio Processing Web
+    </header>
+    <p>This website uses Praat (<a href="https://www.fon.hum.uva.nl/praat/">https://www.fon.hum.uva.nl/praat/</a>) for visualizing 
+        audio waveform and analysing its pitch, intensity, and formants. You can also procoss the audio by converting it from stereo to mono or reducing its noise, then download the processed audio.
+        </p>
+    <form enctype="multipart/form-data" id="form" method="post" action="/view">
+    <p id="upload">Upload your audio file:</p>
+    <input type="file" id="musicFile" name="musicFile" accept=".wav">
+    <input type="submit" value="Submit" class="button" onclick="this.disabled=true;this.form.submit();">
+    </form>
+    </body>
+>>>>>>> 75e3911b399351235c72cd8a1c54f55c0018633e:index.html
+</html>
