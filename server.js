@@ -21,7 +21,7 @@ var upload = multer({ storage: storage })
 
 app.use(express.static(__dirname));
 app.get('/', async function(req, res) {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/public/view/index.html');
 });
 
 app.post("/toHomepage", async function (req, res) {
@@ -39,19 +39,19 @@ app.post("/toHomepage", async function (req, res) {
   res.redirect('/');
 })
 app.get('/viewdata', function (req, res) {
-  res.sendFile(__dirname + '/viewer.html')
+  res.sendFile(__dirname + '/public/view/viewer.html')
 })
 
 app.get('/mono', function (req, res) {
-  res.sendFile(__dirname + '/mono.html')
+  res.sendFile(__dirname + '/public/view/mono.html')
 })
 
 app.get('/stereo', function (req, res) {
-  res.sendFile(__dirname + '/stereo.html')
+  res.sendFile(__dirname + '/public/view/stereo.html')
 })
 
 app.get('/filter', function (req, res) {
-  res.sendFile(__dirname + '/filter.html')
+  res.sendFile(__dirname + '/public/view/filter.html')
 })
 
 app.get('/download', async function (req, res) {
@@ -63,7 +63,7 @@ const server = http.createServer((req, res) => {
 
   var filePath = '.' + req.url;
   if (filePath == './')
-      filePath = './index.html';
+      filePath = './public/view/index.html';
   var extname = path.extname(filePath);
   var contentType = 'text/html';
   switch (extname) {
@@ -87,7 +87,7 @@ const server = http.createServer((req, res) => {
           break;
   }
   if (req.url === '/') {
-    fs.readFile('index.html', (err, data) => {
+    fs.readFile('/public/view/index.html', (err, data) => {
       if (err) {
         res.writeHead(500);
         res.end('Error loading index.html');
@@ -110,7 +110,7 @@ const server = http.createServer((req, res) => {
         res.end(data);
       }
     });
-  } else if (req.url === '/styles.css') {
+  } else if (req.url === '/public/css/styles.css') {
     fs.readFile('styles.css', (err, data) => {
       if (err) {
         res.writeHead(500);
@@ -132,7 +132,7 @@ const server = http.createServer((req, res) => {
 app.listen(3000, function() {
   console.log('Server started on port 3000');
 });
-
+// server.js
 app.post("/view", upload.single("musicFile"), async function (req, res, next) {
   var filename = req.file.filename.slice(0, -4); // "audio.wav" -> "audio"
   exec(`Praat.exe --run script\\extractData.praat ..\\uploads\\ ${filename}`,
@@ -146,7 +146,6 @@ app.post("/view", upload.single("musicFile"), async function (req, res, next) {
   // wait until the audio has completely processed
   await new Promise(resolve => setTimeout(resolve, 12000));
   res.redirect('/viewdata');
-
 });
 
 app.post("/toMono", async function (req, res) {
