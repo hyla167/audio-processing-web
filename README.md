@@ -11,7 +11,6 @@ This web application uses wavesurfer.js (https://wavesurfer-js.org/) and Praat (
 * Download the processed audio
 * Reset the audio to the initial state (i.e complete zoom out the audio)
 * View detailed information: hover over the graph to see details about time and value of pitch, formants, intensity value at the mouse pointer
-* This application can be used without internet connection
 
 # How to use
 1. Clone the repository `git clone https://github.com/hyla167/audio-processing-web` and then switch to the main folder `cd audio-processing-web`
