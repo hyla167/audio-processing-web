@@ -15,4 +15,4 @@ This web application uses wavesurfer.js (https://wavesurfer-js.org/) and Praat (
 
 # How to use
 1. Clone the repository `git clone https://github.com/hyla167/audio-processing-web` and then switch to the main folder `cd audio-processing-web`
-2. Run the program: `node server.js`
+2. Run the application: `node server.js`
